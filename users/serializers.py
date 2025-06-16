@@ -12,3 +12,9 @@ class UserSignupSerializer(serializers.ModelSerializer):
         return user
 
 
+class ForgotPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+class ResetPasswordSerializer(serializers.Serializer):
+    password = serializers.CharField(write_only=True, min_length=6)
