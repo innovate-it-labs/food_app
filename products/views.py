@@ -2,8 +2,8 @@ from django.shortcuts import render
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import Product, Category, SubCategory
-from .serializers import ProductSerializer, CategorySerializer, SubCategorySerializer
+from .models import Product, Category, SubCategory,ProductImage
+from .serializers import ProductSerializer, CategorySerializer, SubCategorySerializer,ProductImageSerializer
 
 # to get product list
 @api_view(['GET'])
