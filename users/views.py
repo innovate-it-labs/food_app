@@ -1,25 +1,8 @@
-<<<<<<< HEAD
-from rest_framework import generics, status
-from rest_framework import serializers
-=======
 from rest_framework import generics, status,serializers
->>>>>>> 563a36169d6fe5cce01fb8e922f0b34ef5863817
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from .models import CustomUser
-<<<<<<< HEAD
-from .serializers import UserSignupSerializer
-from rest_framework.permissions import AllowAny
-from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
- 
- 
-class SignupView(generics.GenericAPIView):
-    serializer_class = UserSignupSerializer
-    permission_classes = [AllowAny]
- 
-=======
 from .serializers import UserSignupSerializer,ForgotPasswordSerializer,ResetPasswordSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -39,7 +22,6 @@ class SignupView(generics.GenericAPIView):
     serializer_class = UserSignupSerializer
     permission_classes = [AllowAny]
 
->>>>>>> 563a36169d6fe5cce01fb8e922f0b34ef5863817
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
@@ -50,15 +32,9 @@ class SignupView(generics.GenericAPIView):
                 'access': str(refresh.access_token),
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-<<<<<<< HEAD
- 
- 
- 
-=======
 
 
 
->>>>>>> 563a36169d6fe5cce01fb8e922f0b34ef5863817
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         self.user = authenticate(
@@ -68,28 +44,12 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         )
         if self.user is None:
             raise serializers.ValidationError("Invalid credentials")
-<<<<<<< HEAD
- 
-=======
 
->>>>>>> 563a36169d6fe5cce01fb8e922f0b34ef5863817
         refresh = RefreshToken.for_user(self.user)
         return {
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         }
-<<<<<<< HEAD
- 
-    @classmethod
-    def get_token(cls, user):
-        return super().get_token(user)
- 
- 
-class LoginView(TokenObtainPairView):
-    serializer_class = CustomTokenObtainPairSerializer
-    permission_classes = [AllowAny]
- 
-=======
 
     @classmethod
     def get_token(cls, user):
@@ -165,4 +125,3 @@ class ResetPasswordView(generics.GenericAPIView):
 
 
 
->>>>>>> 563a36169d6fe5cce01fb8e922f0b34ef5863817
