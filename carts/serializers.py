@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Cart, CartItem
-from django.contrib.auth.models import User
+from django.conf import settings #===========
 from products.models import Product  # Assuming you have a Product model
 
 class CartItemSerializer(serializers.ModelSerializer):
