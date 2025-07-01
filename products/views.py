@@ -44,3 +44,7 @@ def subcategory_list(request):
     subcategories = SubCategory.objects.all()
     serializer = SubCategorySerializer(subcategories, many=True)
     return Response(serializer.data)
+
+
+
+

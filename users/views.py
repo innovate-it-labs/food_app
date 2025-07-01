@@ -1,19 +1,19 @@
-from rest_framework import generics, status,serializers
+from rest_framework import generics, status, serializers,permissions
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
-from .models import CustomUser
-from .serializers import UserSignupSerializer,ForgotPasswordSerializer,ResetPasswordSerializer
+from .models import *
+from .serializers import *
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
-from django.utils.encoding import force_bytes,force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
+from django.conf import settings
 from django.contrib.auth import get_user_model
-
-
+from django.shortcuts import get_object_or_404
 
 User = get_user_model()
 
@@ -34,7 +34,6 @@ class SignupView(generics.GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         self.user = authenticate(
@@ -45,15 +44,21 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         if self.user is None:
             raise serializers.ValidationError("Invalid credentials")
 
-        refresh = RefreshToken.for_user(self.user)
+        refresh = self.get_token(self.user)
+
         return {
             'refresh': str(refresh),
             'access': str(refresh.access_token),
+            'user_type': self.user.user_type, 
+            'email': self.user.email,
         }
 
     @classmethod
     def get_token(cls, user):
-        return super().get_token(user)
+        token = super().get_token(user)
+        token['user_type'] = user.user_type 
+        token['email'] = user.email
+        return token
 
 
 class LoginView(TokenObtainPairView):
@@ -62,35 +67,45 @@ class LoginView(TokenObtainPairView):
 
 
 class ForgotPasswordView(generics.GenericAPIView):
-    serializer_class=ForgotPasswordSerializer
-    permission_classes=[AllowAny]
+    serializer_class = ForgotPasswordSerializer
+    permission_classes = [AllowAny]
 
-    def post(self,request):
-        serializer=self.get_serializer(data=request.data)
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            email=serializer.validated_data['email']
+            email = serializer.validated_data['email']
             try:
-                user=User.objects.get(email=email)
+                user = User.objects.get(email=email)
             except User.DoesNotExist:
-                return Response({'error': 'User not found with this email.'}, status=status.HTTP_404_NOT_FOUND)
-            
+                return Response({'message': 'If this email exists, a reset link has been sent.'}, status=status.HTTP_200_OK)
+
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
 
-            reset_link = f"http://localhost:8000/api/users/reset-password/{uid}/{token}/"  # update to frontend URL
+            reset_link = f"https://your-frontend-domain.com/reset-password/{uid}/{token}/"  
 
-            send_mail(
-                subject="Password Reset Request",
-                message=f"Click the link to reset your password: {reset_link}",
-                from_email="noreply@example.com",
-                recipient_list=[user.email],
+            subject = "Password Reset Request - Foodie App"
+            text_message = f"Click the link to reset your password: {reset_link}"
+            html_message = f"""
+                <p>Hi {user.email},</p>
+                <p>We received a request to reset your password.</p>
+                <p><a href="{reset_link}"> reset your password</a></p>
+                <p>If you didn't request this, please ignore this email.</p>
+                <p>Thanks,<br>Foodie Team</p>
+            """
+
+            email_message = EmailMultiAlternatives(
+                subject=subject,
+                body=text_message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to=[user.email],
             )
-
+            email_message.attach_alternative(html_message, "text/html")
+            email_message.send()
 
             return Response({'message': 'Reset link sent successfully.'}, status=status.HTTP_200_OK)
-        
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
 
 
 class ResetPasswordView(generics.GenericAPIView):
@@ -104,7 +119,7 @@ class ResetPasswordView(generics.GenericAPIView):
                 uid = force_str(urlsafe_base64_decode(uidb64))
                 user = User.objects.get(pk=uid)
             except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-                return Response({'error': 'Invalid link.'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'error': 'Invalid reset link.'}, status=status.HTTP_400_BAD_REQUEST)
 
             if not default_token_generator.check_token(user, token):
                 return Response({'error': 'Token is invalid or has expired.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -114,14 +129,38 @@ class ResetPasswordView(generics.GenericAPIView):
             return Response({'message': 'Password reset successfully.'}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
     
 
 
 
+class SellerProfileView(generics.RetrieveUpdateAPIView):
+    serializer_class = SellerModelSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return SellerModel.objects.get(user=self.request.user)
+
+class SellerRegisterView(generics.CreateAPIView):
+    serializer_class = SellerModelSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 
 
+class UserProfileView(generics.RetrieveUpdateAPIView):
+    serializer_class = UserProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
+    def get_object(self):
+        return get_object_or_404(UserProfile, user=self.request.user)
+    
+class UserRegisterView(generics.CreateAPIView):
+    serializer_class=UserProfileSerializer
+    permission_classes=[permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
