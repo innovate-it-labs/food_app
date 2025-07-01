@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+#from seller .models import Seller
 class Category(models.Model):
     Category_id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=255, unique=True)
@@ -16,6 +17,7 @@ class SubCategory(models.Model):
         return f"{self.name} ({self.category.name})"
 
 class Product(models.Model):
+    seller = models.ForeignKey('seller.Seller', on_delete=models.CASCADE, related_name='products',null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     subcategory = models.ForeignKey(SubCategory, on_delete=models.SET_NULL, null=True, blank=True)
     delivery_choices=[
