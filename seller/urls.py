@@ -1,7 +1,7 @@
 
-from django.urls import path
-from .views import seller_dashboard  # Don't import from products here
+#from django.urls import path
+#from .views import seller_dashboard  # Don't import from products here
 
-urlpatterns = [
-    path('dashboard/', seller_dashboard, name='seller-dashboard'),
-]
+#urlpatterns = [
+#    path('dashboard/', seller_dashboard, name='seller-dashboard'),
+#]
