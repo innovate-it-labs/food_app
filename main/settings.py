@@ -37,13 +37,38 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',  # ✅ Required by allauth
+
+    
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework.authtoken',  # ✅ Required by dj-rest-auth
+
+   
     'users',
     'carts',
     'products',
     'orders',
+
+   
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',   # ✅ for Google
+    'allauth.socialaccount.providers.github',   # ✅ for GitHub
+
+   
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
+    
 ]
+
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -53,6 +78,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'main.urls'
@@ -142,6 +169,30 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 
+
+SITE_ID = 1
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+}
+
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None  # 🚨 REQUIRED
+ACCOUNT_USERNAME_REQUIRED = False         # 🚨 REQUIRED
+
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+ACCOUNT_LOGIN_METHODS = {'email'}
+
+#ACCOUNT_AUTHENTICATION_METHOD = 'email'
+#ACCOUNT_SIGNUP_FIELDS = ['email']
+
+
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'users.serializers.UserSignupSerializer',
+}
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -149,5 +200,3 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'digitallearning1040@gmail.com'
 EMAIL_HOST_PASSWORD = 'orjl jnzz akws yhcq'  
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
-

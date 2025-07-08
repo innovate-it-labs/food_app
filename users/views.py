@@ -1,26 +1,82 @@
-from rest_framework import generics, status, serializers,permissions
+from rest_framework import generics, status, serializers, permissions
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth import authenticate
-from .models import *
-from .serializers import *
-from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes, force_str
+
+from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+
+import requests
+
+
+from .models import SellerProfile, CustomerProfile 
+from .serializers import (
+    UserSignupSerializer,
+    ForgotPasswordSerializer,
+    ResetPasswordSerializer,
+    SellerProfileSerializer,
+    CustomerProfileSerializer,
+)
+
 
 User = get_user_model()
 
+class GoogleSocialLoginView(APIView):
+    permission_classes = [permissions.AllowAny]
 
-class SignupView(generics.GenericAPIView):
+    def post(self, request):
+        access_token = request.data.get('access_token')
+
+        if not access_token:
+            return Response({'error': 'Access token required.'}, status=400)
+
+        # Verify token and get user info from Google
+        google_userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
+        response = requests.get(
+            google_userinfo_url,
+            params={'access_token': access_token}
+        )
+
+        if response.status_code != 200:
+            return Response({'error': 'Invalid Google token'}, status=400)
+
+        user_data = response.json()
+        email = user_data.get('email')
+        name = user_data.get('name')
+
+        if not email:
+            return Response({'error': 'Google token did not return email'}, status=400)
+
+       
+        user, created = User.objects.get_or_create(email=email)
+        if created:
+            user.set_unusable_password()  # So no login via password
+            user.save()
+
+        
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
+            'user': {
+                'email': user.email,
+                'name': name,
+                'id': user.id
+            }
+        })
+
+
+
+class SignupView(generics.CreateAPIView):
     serializer_class = UserSignupSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -48,27 +104,25 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         return {
             'refresh': str(refresh),
-            'access': str(refresh.access_token),
-            'user_type': self.user.user_type, 
+            'access': str(refresh.access_token), 
             'email': self.user.email,
         }
 
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-        token['user_type'] = user.user_type 
         token['email'] = user.email
         return token
 
 
 class LoginView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [permissions.AllowAny]
 
 
 class ForgotPasswordView(generics.GenericAPIView):
     serializer_class = ForgotPasswordSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -110,7 +164,7 @@ class ForgotPasswordView(generics.GenericAPIView):
 
 class ResetPasswordView(generics.GenericAPIView):
     serializer_class = ResetPasswordSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request, uidb64, token):
         serializer = self.get_serializer(data=request.data)
@@ -134,33 +188,38 @@ class ResetPasswordView(generics.GenericAPIView):
 
 
 class SellerProfileView(generics.RetrieveUpdateAPIView):
-    serializer_class = SellerModelSerializer
+    serializer_class = SellerProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
-        return SellerModel.objects.get(user=self.request.user)
+        return SellerProfile.objects.get(user=self.request.user)
 
 class SellerRegisterView(generics.CreateAPIView):
-    serializer_class = SellerModelSerializer
+    serializer_class = SellerProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
+        if SellerProfile.objects.filter(user=self.request.user).exists():
+            raise serializers.ValidationError("Seller profile already exists.")
         serializer.save(user=self.request.user)
 
 
 
 
-class UserProfileView(generics.RetrieveUpdateAPIView):
-    serializer_class = UserProfileSerializer
+
+class CustomerProfileView(generics.RetrieveUpdateAPIView):
+    serializer_class = CustomerProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
-        return get_object_or_404(UserProfile, user=self.request.user)
+        return get_object_or_404(CustomerProfile, user=self.request.user)
     
-class UserRegisterView(generics.CreateAPIView):
-    serializer_class=UserProfileSerializer
+class CustomerRegisterView(generics.CreateAPIView):
+    serializer_class=CustomerProfileSerializer
     permission_classes=[permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
+        if  CustomerProfile.objects.filter(user=self.request.user).exists():
+            raise serializers.ValidationError("Customer profile already exists.")
         serializer.save(user=self.request.user)
 
