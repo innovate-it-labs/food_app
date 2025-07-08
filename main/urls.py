@@ -10,10 +10,5 @@ urlpatterns = [
     path('api/', include('products.urls')),
     path('api/', include('carts.urls')),
     path('api/orders/', include('orders.urls')),
-<<<<<<< HEAD
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-=======
-    #path('api/seller/',include('seller.urls')),
-]
->>>>>>> ksaidurga
