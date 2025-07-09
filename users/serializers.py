@@ -5,20 +5,42 @@ from dj_rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
 
 
+class SetUserTypeSerializer(serializers.Serializer):
+    user_type = serializers.ChoiceField(choices=[('seller', 'Seller'), ('customer', 'Customer')])
+    def save(self, **kwargs):
+        user = self.context['request'].user
+        user.user_type = self.validated_data['user_type']
+        user.save()
 
-class UserSignupSerializer(RegisterSerializer):
-    username = None  # remove the username field
-    email = serializers.EmailField(required=True)
+        return user
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields.pop('username', None)
 
-    def get_cleaned_data(self):
-        data_dict = super().get_cleaned_data()
-        data_dict.pop('username', None)  # ensure username is not used
-        return data_dict
+class UserSignupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['email', 'password']
+        extra_kwargs = {'password': {'write_only': True}}
 
+    def create(self, validated_data):
+        user = CustomUser.objects.create_user(
+            email=validated_data['email'],
+            password=validated_data['password']
+        )
+        return user
+
+
+# class UserSignupSerializer(RegisterSerializer):
+#     username = None  # remove the username field
+#     email = serializers.EmailField(required=True)
+
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         self.fields.pop('username', None)
+
+#     def get_cleaned_data(self):
+#         data_dict = super().get_cleaned_data()
+#         data_dict.pop('username', None)  # ensure username is not used
+#         return data_dict
 
 
 

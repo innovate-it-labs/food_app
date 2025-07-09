@@ -23,10 +23,27 @@ from .serializers import (
     ResetPasswordSerializer,
     SellerProfileSerializer,
     CustomerProfileSerializer,
+    SetUserTypeSerializer
 )
 
 
 User = get_user_model()
+
+
+
+class SetUserTypeView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        serializer = SetUserTypeSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"detail": "User type created successfully."}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
 
 class GoogleSocialLoginView(APIView):
     permission_classes = [permissions.AllowAny]

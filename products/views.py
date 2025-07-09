@@ -45,9 +45,6 @@ def subcategory_list(request):
     subcategories = SubCategory.objects.all()
     serializer = SubCategorySerializer(subcategories, many=True)
     return Response(serializer.data)
-<<<<<<< HEAD
-
-=======
 
 # to create acategory
 @api_view(['POST'])
@@ -127,7 +124,6 @@ def update_product(request, pk):
         serializer.save()
         return Response(serializer.data)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
->>>>>>> ksaidurga
 
 
 

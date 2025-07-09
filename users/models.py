@@ -19,9 +19,14 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+    USER_TYPE_CHOICES = (
+        ('customer', 'Customer'),
+        ('seller', 'Seller'),
+    )
     
     email = models.EmailField(unique=True)
     full_name = models.CharField(max_length=30,blank=True)
+    user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES, blank=True, default='')
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
@@ -35,8 +40,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+    
+
+
 
 class CustomerProfile(models.Model):
+    
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
     name = models.CharField(max_length=100)
     address = models.TextField(blank=True)
@@ -50,7 +59,7 @@ class CustomerProfile(models.Model):
         verbose_name_plural = "Customer Profiles"
 
     def __str__(self):
-        return f"{self.user.email}'s Profile"
+        return f"Customer: {self.user.email}"
 
 class SellerProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='seller_profile')
@@ -69,4 +78,4 @@ class SellerProfile(models.Model):
 
 
     def __str__(self):
-        return self.shop_name
+        return f"Customer: {self.user.email}"
