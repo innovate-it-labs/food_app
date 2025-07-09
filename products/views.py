@@ -8,16 +8,13 @@ from .serializers import ProductSerializer, CategorySerializer, SubCategorySeria
 
 # to get product list
 @api_view(['GET'])
-def product_list(request):
-    category = request.GET.get('category')
-    subcategory = request.GET.get('subcategory')
-    products = Product.objects.all()
+def products_by_subcategory(request, subcat_id):
+    try:
+        subcategory = SubCategory.objects.get(SubCategory_id=subcat_id)
+    except SubCategory.DoesNotExist:
+        return Response({'error': 'SubCategory not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    if category:
-        products = products.filter(category__name__iexact=category)
-    if subcategory:
-        products = products.filter(subcategory__name__iexact=subcategory)
-
+    products = Product.objects.filter(subcategory=subcategory)
     serializer = ProductSerializer(products, many=True)
     return Response(serializer.data)
 
@@ -39,16 +36,25 @@ def category_list(request):
     serializer = CategorySerializer(categories, many=True)
     return Response(serializer.data)
 
-# to get subcategory list
+# to get subcategory list of a particular category
 @api_view(['GET'])
-def subcategory_list(request):
-    subcategories = SubCategory.objects.all()
+def subcategories_by_category(request, category_id):
+    try:
+        category = Category.objects.get(Category_id=category_id)
+    except Category.DoesNotExist:
+        return Response({'error': 'Category not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    subcategories = category.subcategories.all()
     serializer = SubCategorySerializer(subcategories, many=True)
     return Response(serializer.data)
+<<<<<<< HEAD
+=======
+
+>>>>>>> d87a1867647e1b14213d1b7ada398fd2ae6b93c0
 
 # to create acategory
 @api_view(['POST'])
-#@permission_classes([IsSellerUser])
+#@permission_classes([IsSeller])
 def create_category(request):
     serializer = CategorySerializer(data=request.data)
     if serializer.is_valid():
@@ -58,7 +64,7 @@ def create_category(request):
 
 #to delete a category
 @api_view(['DELETE'])
-#@permission_classes([IsSellerUser])
+#@permission_classes([IsSeller])
 def delete_category(request, pk):
     try:
         category = Category.objects.get(pk=pk)
@@ -69,7 +75,7 @@ def delete_category(request, pk):
 
 #to create a subcategory
 @api_view(['POST'])
-#@permission_classes([IsSellerUser])
+#@permission_classes([IsSeller])
 def create_subcategory(request):
     serializer = SubCategorySerializer(data=request.data)
     if serializer.is_valid():
@@ -79,7 +85,7 @@ def create_subcategory(request):
 
 # to delete a subcategory
 @api_view(['DELETE'])
-#@permission_classes([IsSellerUser])
+#@permission_classes([IsSeller])
 def delete_subcategory(request, pk):
     try:
         subcategory = SubCategory.objects.get(pk=pk)
@@ -90,7 +96,7 @@ def delete_subcategory(request, pk):
 
 # to add a product   
 @api_view(['POST'])
-#@permission_classes([IsSellerUser])
+#@permission_classes([IsSeller])
 def create_product(request):
     seller = request.user.seller_profile
     serializer = ProductSerializer(data=request.data)
@@ -101,7 +107,7 @@ def create_product(request):
 
 #to delete a product
 @api_view(['DELETE'])
-#@permission_classes([IsSellerUser])
+#@permission_classes([IsSeller])
 def delete_product(request, pk):
     try:
         product = Product.objects.get(pk=pk, seller__user=request.user)
@@ -112,7 +118,7 @@ def delete_product(request, pk):
     
 #to update a product
 @api_view(['PUT', 'PATCH'])
-#@permission_classes([IsSellerUser])
+#@permission_classes([IsSeller])
 def update_product(request, pk):
     try:
         product = Product.objects.get(pk=pk, seller__user=request.user)

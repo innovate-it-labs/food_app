@@ -5,10 +5,10 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = ['Category_id','name']
 class SubCategorySerializer(serializers.ModelSerializer):
-    category = CategorySerializer(read_only=True)
+    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
     class Meta:
         model = SubCategory
-        fields = ['Subcategory_id','name', 'category']
+        fields = ['SubCategory_id','name', 'category']
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductImage
@@ -20,4 +20,4 @@ class ProductSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, read_only=True)
     class Meta:
         model=Product
-        field='__all__'
+        fields='__all__'
