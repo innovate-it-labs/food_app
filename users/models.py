@@ -54,10 +54,7 @@ class CustomerProfile(models.Model):
     preferences = models.JSONField(default=dict, blank=True)
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
 
-    class Meta:
-        verbose_name = "Customer Profile"
-        verbose_name_plural = "Customer Profiles"
-
+    
     def __str__(self):
         return f"Customer: {self.user.email}"
 

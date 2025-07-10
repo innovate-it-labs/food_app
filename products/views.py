@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Product, Category, SubCategory,ProductImage
 from .serializers import ProductSerializer, CategorySerializer, SubCategorySerializer,ProductImageSerializer
+from users.permissions import IsSeller
 
 # to get product list
 @api_view(['GET'])
@@ -47,15 +48,13 @@ def subcategories_by_category(request, category_id):
     subcategories = category.subcategories.all()
     serializer = SubCategorySerializer(subcategories, many=True)
     return Response(serializer.data)
-<<<<<<< HEAD
-=======
 
->>>>>>> d87a1867647e1b14213d1b7ada398fd2ae6b93c0
 
-# to create acategory
+
 @api_view(['POST'])
 #@permission_classes([IsSeller])
 def create_category(request):
+    permission_classes = [IsSeller]
     serializer = CategorySerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -66,6 +65,7 @@ def create_category(request):
 @api_view(['DELETE'])
 #@permission_classes([IsSeller])
 def delete_category(request, pk):
+    permission_classes = [IsSeller]
     try:
         category = Category.objects.get(pk=pk)
         category.delete()
@@ -77,6 +77,7 @@ def delete_category(request, pk):
 @api_view(['POST'])
 #@permission_classes([IsSeller])
 def create_subcategory(request):
+    permission_classes = [IsSeller]
     serializer = SubCategorySerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -87,6 +88,7 @@ def create_subcategory(request):
 @api_view(['DELETE'])
 #@permission_classes([IsSeller])
 def delete_subcategory(request, pk):
+    permission_classes = [IsSeller]
     try:
         subcategory = SubCategory.objects.get(pk=pk)
         subcategory.delete()
@@ -98,6 +100,7 @@ def delete_subcategory(request, pk):
 @api_view(['POST'])
 #@permission_classes([IsSeller])
 def create_product(request):
+    permission_classes = [IsSeller]
     seller = request.user.seller_profile
     serializer = ProductSerializer(data=request.data)
     if serializer.is_valid():
@@ -109,6 +112,7 @@ def create_product(request):
 @api_view(['DELETE'])
 #@permission_classes([IsSeller])
 def delete_product(request, pk):
+    permission_classes = [IsSeller] 
     try:
         product = Product.objects.get(pk=pk, seller__user=request.user)
         product.delete()
@@ -120,6 +124,7 @@ def delete_product(request, pk):
 @api_view(['PUT', 'PATCH'])
 #@permission_classes([IsSeller])
 def update_product(request, pk):
+    permission_classes = [IsSeller] 
     try:
         product = Product.objects.get(pk=pk, seller__user=request.user)
     except Product.DoesNotExist:
