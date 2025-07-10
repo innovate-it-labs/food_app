@@ -1,2 +1,17 @@
-/env
-/faltu.py
+# Ignore compiled Python files
+__pycache__/
+*.py[cod]
+
+# Ignore DB file
+db.sqlite3
+
+# Ignore environment folders
+env/
+venv/
+.venv/
+
+# Ignore IDE/editor and system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
