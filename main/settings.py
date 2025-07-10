@@ -30,8 +30,8 @@ DEBUG = True
 #     '127.0.0.1',
 #     'foodie-2-l2sv.onrender.com'  # ✅ your Render domain
 # ]
+ALLOWED_HOSTS = ['foodie-2-l2sv.onrender.com', '127.0.0.1', 'localhost']
 
-ALLOWED_HOSTS = ['*']
 
 
 
