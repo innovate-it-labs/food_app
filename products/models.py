@@ -1,7 +1,11 @@
 from django.db import models
 from users.models import SellerProfile
 from django.utils import timezone
+from django.contrib.auth import get_user_model
 #from seller .models import Seller
+
+User = get_user_model()
+
 class Category(models.Model):
     Category_id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=255, unique=True)
@@ -18,7 +22,7 @@ class SubCategory(models.Model):
         return f"{self.name} ({self.category.name})"
 
 class Product(models.Model):
-    seller = models.ForeignKey(SellerProfile, on_delete=models.CASCADE, related_name='products',null=True, blank=True)
+    seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name='products',null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     subcategory = models.ForeignKey(SubCategory, on_delete=models.SET_NULL, null=True, blank=True)
     delivery_choices=[

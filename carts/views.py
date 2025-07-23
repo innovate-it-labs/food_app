@@ -8,14 +8,11 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-# Temporary workaround: always use the first user in DB
-def get_dummy_user():
-    return User.objects.first()
-
 
 @api_view(['GET'])
+
 def cart_detail_view(request):
-    user = get_dummy_user()  # replace with request.user when auth is ready
+    user = request.user  
     cart, _ = Cart.objects.get_or_create(user=user, is_active=True)
     serializer = CartSerializer(cart)
     return JsonResponse(serializer.data, status=200, safe=False)
@@ -23,7 +20,7 @@ def cart_detail_view(request):
 
 @api_view(['POST'])
 def add_to_cart_view(request):
-    user = get_dummy_user()
+    user = request.user
     product_id = request.data.get('product_id')
     quantity = int(request.data.get('quantity', 1))
 
@@ -49,7 +46,7 @@ def add_to_cart_view(request):
 
 @api_view(['POST'])
 def remove_from_cart_view(request):
-    user = get_dummy_user()
+    user = request.user
     product_id = request.data.get('product_id')
     quantity = int(request.data.get('quantity', 1))
 

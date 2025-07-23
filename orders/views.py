@@ -8,15 +8,13 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-def get_dummy_user():
-    return User.objects.first()
 
 @api_view(['POST'])
 def place_order(request):
-    user = get_dummy_user()
+    user = request.user
 
     try:
-        cart = Cart.objects.get(user=user, is_active=True)
+        cart = Cart.objects.get(user=request.user, is_active=True)
     except Cart.DoesNotExist:
         return Response({'error': 'Cart is empty'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -47,7 +45,7 @@ def place_order(request):
 
 @api_view(['GET'])
 def order_history(request):
-    user = get_dummy_user()
-    orders = Order.objects.filter(user=user).order_by('-created_at')
+    user = request.user
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
     serializer = OrderSerializer(orders, many=True)
     return Response(serializer.data, status=200)

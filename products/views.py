@@ -65,7 +65,7 @@ def create_category(request):
 @api_view(['DELETE'])
 #@permission_classes([IsSeller])
 def delete_category(request, pk):
-    permission_classes = [IsSeller]
+    #permission_classes = [IsSeller]
     try:
         category = Category.objects.get(pk=pk)
         category.delete()
@@ -77,7 +77,7 @@ def delete_category(request, pk):
 @api_view(['POST'])
 #@permission_classes([IsSeller])
 def create_subcategory(request):
-    permission_classes = [IsSeller]
+    #permission_classes = [IsSeller]
     serializer = SubCategorySerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -88,7 +88,7 @@ def create_subcategory(request):
 @api_view(['DELETE'])
 #@permission_classes([IsSeller])
 def delete_subcategory(request, pk):
-    permission_classes = [IsSeller]
+    #permission_classes = [IsSeller]
     try:
         subcategory = SubCategory.objects.get(pk=pk)
         subcategory.delete()
@@ -100,7 +100,7 @@ def delete_subcategory(request, pk):
 @api_view(['POST'])
 #@permission_classes([IsSeller])
 def create_product(request):
-    permission_classes = [IsSeller]
+    #permission_classes = [IsSeller]
     seller = request.user.seller_profile
     serializer = ProductSerializer(data=request.data)
     if serializer.is_valid():
@@ -112,7 +112,7 @@ def create_product(request):
 @api_view(['DELETE'])
 #@permission_classes([IsSeller])
 def delete_product(request, pk):
-    permission_classes = [IsSeller] 
+    #permission_classes = [IsSeller] 
     try:
         product = Product.objects.get(pk=pk, seller__user=request.user)
         product.delete()
@@ -124,7 +124,7 @@ def delete_product(request, pk):
 @api_view(['PUT', 'PATCH'])
 #@permission_classes([IsSeller])
 def update_product(request, pk):
-    permission_classes = [IsSeller] 
+    #permission_classes = [IsSeller] 
     try:
         product = Product.objects.get(pk=pk, seller__user=request.user)
     except Product.DoesNotExist:
