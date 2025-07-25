@@ -30,11 +30,7 @@ DEBUG = True
 #     '127.0.0.1',
 #     'foodie-2-l2sv.onrender.com'  # ✅ your Render domain
 # ]
-ALLOWED_HOSTS = [
-    'food-app-isxa.onrender.com',
-    'localhost',
-    '127.0.0.1',
-]
+ALLOWED_HOSTS = ['food-app-4dre.onrender.com', 'localhost', '127.0.0.1']
 
 
 
