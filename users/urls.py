@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import SignupView, LoginView,ForgotPasswordView,ResetPasswordView,SellerRegisterView,SellerProfileView,CustomerProfileView,SetUserTypeView
+from .views import SignupView, LoginView,ForgotPasswordView,ResetPasswordView,SellerRegisterView,SellerProfileView,CustomerRegisterView,CustomerProfileView,SetUserTypeView
 from rest_framework_simplejwt.views import TokenRefreshView
 
 
@@ -15,7 +15,7 @@ urlpatterns = [
     path('seller/profile/', SellerProfileView.as_view(), name='seller-profile'),
     
     #customer endpoints
-    path('customer/register/', CustomerProfileView.as_view(), name='user-register'),
+    path('customer/register/', CustomerRegisterView.as_view(), name='user-register'),
     path('customer/profile/', CustomerProfileView.as_view(), name='user-profile'),
 
     path('set-user-type/',SetUserTypeView.as_view(),name="set-user-type")

@@ -50,7 +50,9 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework.authtoken',  # ✅ Required by dj-rest-auth
 
-   
+     #cors 
+     'corsheaders',
+
     'users',
     'carts',
     'products',
@@ -79,6 +81,7 @@ AUTHENTICATION_BACKENDS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -193,6 +196,26 @@ ACCOUNT_LOGIN_METHODS = {'email'}
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_EMAIL_REQUIRED = True
 
+
+
+
+##################################### CORS allowed origin ######################################
+
+CORS_ALLOWED_ORIGINS = [
+    #"https://your-frontend-domain.com",  # frontend deployed domain
+    "http://localhost:3000",             # if frontend dev uses React/Vite
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+################### Customised header for CORS ################################
+
+
+
+CORS_ALLOW_HEADERS = [
+    'authorization',
+    'content-type',
+]
 
 
 
