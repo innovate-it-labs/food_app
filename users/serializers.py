@@ -56,7 +56,9 @@ class ResetPasswordSerializer(serializers.Serializer):
 class CustomerProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomerProfile
-        fields = ['name', 'address', 'city', 'state', 'preferences', 'profile_picture']
+        fields = ['name','house_number', 'address', 'city', 'gender','date_of_birth','phone_number','profile_picture']
+
+
 
     def validate_name(self, value):
         if not re.match(r'^[A-Za-z ]+$', value):
@@ -73,7 +75,7 @@ class CustomerProfileSerializer(serializers.ModelSerializer):
 class SellerProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = SellerProfile
-        fields = ['shop_name', 'gst_number', 'address', 'logo', 'verified']
+        fields = ['name','phone_number','date_of_birth','profile_picture']
         read_only_fields = ['verified']
 
     

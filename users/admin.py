@@ -19,7 +19,7 @@ class SellerProfileInline(admin.StackedInline):
 @admin.register(CustomUser)
 class UserAdmin(BaseUserAdmin):
     inlines = []
-    list_display = ('email', 'user_type', 'is_staff', 'is_active', 'date_joined')
+    list_display = ('id','email', 'user_type', 'is_staff', 'is_active', 'date_joined')
     list_filter = ('user_type', 'is_staff', 'is_superuser', 'is_active')
     search_fields = ('email', 'full_name')
     ordering = ('-date_joined',)
@@ -51,12 +51,12 @@ class UserAdmin(BaseUserAdmin):
 # Register profiles separately as well (optional)
 @admin.register(CustomerProfile)
 class CustomerProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'name', 'city', 'state')
+    list_display = ('user','name','house_number', 'address', 'city', 'gender','date_of_birth','phone_number','profile_picture')
     search_fields = ('user__email', 'name', 'city')
-    list_filter = ('city', 'state')
+    list_filter = ('city',)
 
 @admin.register(SellerProfile)
 class SellerProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'shop_name', 'gst_number', 'city', 'verified')
-    search_fields = ('user__email', 'shop_name', 'gst_number')
-    list_filter = ('city', 'verified')
+    list_display = ('user', 'name','phone_number','date_of_birth','profile_picture')
+    search_fields = ('user__email', 'phone_number')
+    

@@ -47,11 +47,21 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 class CustomerProfile(models.Model):
     
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
-    name = models.CharField(max_length=100)
+    name=models.CharField(max_length=30,blank=False,unique=True)
+    house_number=models.CharField(max_length=50,blank=True)
     address = models.TextField(blank=True)
-    city = models.CharField(max_length=100, blank=True)
-    state = models.CharField(max_length=100, blank=True)
-    preferences = models.JSONField(default=dict, blank=True)
+    city = models.CharField(max_length=50, blank=False)
+
+    
+
+    GENDER_CHOICES = [
+        ('M', 'Male'),
+        ('F', 'Female'),
+        ('O', 'Other'),
+    ]
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
+    phone_number = models.CharField(max_length=15, unique=True, blank=False, null=False)
+    date_of_birth = models.DateField(null=True, blank=True)
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
 
     
@@ -60,12 +70,10 @@ class CustomerProfile(models.Model):
 
 class SellerProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='seller_profile')
-    shop_name = models.CharField(max_length=30,blank=False)
-    gst_number = models.CharField(max_length=20, blank=False)
-    address = models.TextField(blank=False)
-    city=models.TextField(blank=False)
-    logo = models.ImageField(upload_to='seller_logos/', blank=True, null=True)
-    verified = models.BooleanField(default=False)
+    name=models.CharField(max_length=30,blank=False,unique=True)
+    phone_number = models.CharField(max_length=15, unique=True, blank=False, null=False)
+    date_of_birth = models.DateField(null=True, blank=True)
+    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
 
     
 
@@ -75,4 +83,4 @@ class SellerProfile(models.Model):
 
 
     def __str__(self):
-        return f"Customer: {self.user.email}"
+        return f"Seller: {self.user.email}"
