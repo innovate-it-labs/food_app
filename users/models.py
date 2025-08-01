@@ -50,7 +50,7 @@ class CustomerProfile(models.Model):
     name=models.CharField(max_length=30,blank=False,unique=True)
     house_number=models.CharField(max_length=50,blank=True)
     address = models.TextField(blank=True)
-    city = models.CharField(max_length=50, blank=False)
+    city = models.CharField(max_length=50, blank=True)
 
     
 
@@ -60,7 +60,7 @@ class CustomerProfile(models.Model):
         ('O', 'Other'),
     ]
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
-    phone_number = models.CharField(max_length=15, unique=True, blank=False, null=False)
+    phone_number = models.CharField(max_length=15, unique=True, blank=True, null=False)
     date_of_birth = models.DateField(null=True, blank=True)
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
 
