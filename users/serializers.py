@@ -16,11 +16,7 @@ class SetUserTypeSerializer(serializers.Serializer):
 
 
 class UserSignupSerializer(serializers.ModelSerializer):
-    date_joined = serializers.DateTimeField(
-        format="%d/%m/%Y",
-        input_formats=["%d/%m/%Y"]                       
-                        
-    )
+    
     class Meta:
         model = CustomUser
         fields = ['email', 'password']
@@ -32,20 +28,6 @@ class UserSignupSerializer(serializers.ModelSerializer):
             password=validated_data['password']
         )
         return user
-
-
-# class UserSignupSerializer(RegisterSerializer):
-#     username = None  # remove the username field
-#     email = serializers.EmailField(required=True)
-
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.fields.pop('username', None)
-
-#     def get_cleaned_data(self):
-#         data_dict = super().get_cleaned_data()
-#         data_dict.pop('username', None)  # ensure username is not used
-#         return data_dict
 
 
 
@@ -70,8 +52,8 @@ class CustomerProfileSerializer(serializers.ModelSerializer):
 
 
     def validate_name(self, value):
-        if not re.match(r'^[A-Za-z ]+$', value):
-            raise serializers.ValidationError("Name should only contain letters and spaces.")
+        if not re.match(r'^[A-Za-z0-9 ]+$', value):
+            raise serializers.ValidationError("Name should only contain letters,number and spaces.")
         return value
 
     def validate_city(self, value):
