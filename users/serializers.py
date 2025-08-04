@@ -43,7 +43,9 @@ class ResetPasswordSerializer(serializers.Serializer):
 class CustomerProfileSerializer(serializers.ModelSerializer):
     date_of_birth = serializers.DateField(
         format="%d/%m/%Y",                     # Output format
-        input_formats=["%d/%m/%Y"]             # Accepted input format
+        input_formats=["%d/%m/%Y"],            # Accepted input format
+        required=False,                         # ✅ Add this line
+        allow_null=True                          # ✅ And this
     )
     class Meta:
         model = CustomerProfile
