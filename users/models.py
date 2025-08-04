@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.conf import settings
-
+from django.core.validators import RegexValidator
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -29,7 +29,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES, blank=True, default='')
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    date_joined = models.DateTimeField(auto_now_add=True)
+    date_joined = models.DateField(auto_now_add=True)
 
     
 
@@ -47,7 +47,18 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 class CustomerProfile(models.Model):
     
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
-    name=models.CharField(max_length=30,blank=False,unique=True)
+    name = models.CharField(
+    max_length=30,
+    blank=False,
+    unique=True,
+    validators=[
+        RegexValidator(
+            regex=r'^[A-Za-z0-9 ]+$',
+            message='Name can only contain letters, numbers, and spaces.',
+            code='invalid_name'
+        )
+    ]
+    )
     house_number=models.CharField(max_length=50,blank=True)
     address = models.TextField(blank=True)
     city = models.CharField(max_length=50, blank=True)
@@ -70,7 +81,18 @@ class CustomerProfile(models.Model):
 
 class SellerProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='seller_profile')
-    name=models.CharField(max_length=30,blank=False,unique=True)
+    name = models.CharField(
+    max_length=30,
+    blank=False,
+    unique=True,
+    validators=[
+        RegexValidator(
+            regex=r'^[A-Za-z0-9 ]+$',
+            message='Name can only contain letters, numbers, and spaces.',
+            code='invalid_name'
+        )
+    ]
+    )
     phone_number = models.CharField(max_length=15, unique=True, blank=False, null=False)
     date_of_birth = models.DateField(null=True, blank=True)
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)

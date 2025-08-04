@@ -16,6 +16,11 @@ class SetUserTypeSerializer(serializers.Serializer):
 
 
 class UserSignupSerializer(serializers.ModelSerializer):
+    date_joined = serializers.DateTimeField(
+        format="%d/%m/%Y",
+        input_formats=["%d/%m/%Y"]                       
+                        
+    )
     class Meta:
         model = CustomUser
         fields = ['email', 'password']
@@ -54,6 +59,10 @@ class ResetPasswordSerializer(serializers.Serializer):
 
 
 class CustomerProfileSerializer(serializers.ModelSerializer):
+    date_of_birth = serializers.DateField(
+        format="%d/%m/%Y",                     # Output format
+        input_formats=["%d/%m/%Y"]             # Accepted input format
+    )
     class Meta:
         model = CustomerProfile
         fields = ['name','house_number', 'address', 'city', 'gender','date_of_birth','phone_number','profile_picture']
@@ -73,6 +82,10 @@ class CustomerProfileSerializer(serializers.ModelSerializer):
 
 
 class SellerProfileSerializer(serializers.ModelSerializer):
+    date_of_birth = serializers.DateField(
+        format="%d/%m/%Y",                     # Output format
+        input_formats=["%d/%m/%Y"]             # Accepted input format
+    )
     class Meta:
         model = SellerProfile
         fields = ['name','phone_number','date_of_birth','profile_picture']
