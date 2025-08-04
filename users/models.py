@@ -94,7 +94,7 @@ class SellerProfile(models.Model):
             code='invalid_name'
         )
     ]
-)
+    )
 
     phone_number = models.CharField(max_length=15, unique=True, blank=True, null=True)
     date_of_birth = models.DateField(null=True, blank=True)
