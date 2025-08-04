@@ -30,7 +30,7 @@ DEBUG = True
 #     '127.0.0.1',
 #     'foodie-2-l2sv.onrender.com'  # ✅ your Render domain
 # ]
-ALLOWED_HOSTS = ['https://food-app-1-dusp.onrender.com/', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['food-app-1-dusp.onrender.com', 'localhost', '127.0.0.1']
 
 
 
