@@ -50,14 +50,7 @@ class CustomerProfile(models.Model):
     name = models.CharField(
     max_length=30,
     blank=False,
-    unique=True,
-    validators=[
-        RegexValidator(
-            regex=r'^[A-Za-z0-9 ]+$',
-            message='Name can only contain letters, numbers, and spaces.',
-            code='invalid_name'
-        )
-    ]
+    unique=True
 )
 
     house_number=models.CharField(max_length=50,blank=True)
@@ -86,14 +79,7 @@ class SellerProfile(models.Model):
     name = models.CharField(
     max_length=30,
     blank=False,
-    unique=True,
-    validators=[
-        RegexValidator(
-            regex=r'^[A-Za-z0-9 ]+$',
-            message='Name can only contain letters, numbers, and spaces.',
-            code='invalid_name'
-        )
-    ]
+    unique=True
     )
 
     phone_number = models.CharField(max_length=15, unique=True, blank=True, null=True)

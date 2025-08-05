@@ -53,22 +53,18 @@ class CustomerProfileSerializer(serializers.ModelSerializer):
 
 
 
-    def validate_name(self, value):
-        if not re.match(r'^[A-Za-z0-9 ]+$', value):
-            raise serializers.ValidationError("Name should only contain letters,number and spaces.")
-        return value
+    
 
-    def validate_city(self, value):
-        if len(value) < 2:
-            raise serializers.ValidationError("City name too short.")
-        return value
+    
     
 
 
 class SellerProfileSerializer(serializers.ModelSerializer):
     date_of_birth = serializers.DateField(
         format="%d/%m/%Y",                     # Output format
-        input_formats=["%d/%m/%Y"]             # Accepted input format
+        input_formats=["%d/%m/%Y"],            # Accepted input format
+        required=False,                         # ✅ Add this line
+        allow_null=True                          # ✅ And this
     )
     class Meta:
         model = SellerProfile
@@ -77,7 +73,4 @@ class SellerProfileSerializer(serializers.ModelSerializer):
 
     
 
-    def validate_shop_name(self, value):
-        if len(value) < 3:
-            raise serializers.ValidationError("Shop name must be at least 3 characters.")
-        return value
+    
