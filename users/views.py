@@ -122,7 +122,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         return {
             'refresh': str(refresh),
             'access': str(refresh.access_token), 
-            'email': self.user.email,
+            
         }
 
     @classmethod
@@ -153,7 +153,7 @@ class ForgotPasswordView(generics.GenericAPIView):
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
 
-            reset_link = f"https://your-frontend-domain.com/reset-password/{uid}/{token}/"  
+            reset_link = f"http://localhost:3000/reset-password/{uid}/{token}/"  
 
             subject = "Password Reset Request - Foodie App"
             text_message = f"Click the link to reset your password: {reset_link}"
@@ -201,7 +201,7 @@ class ResetPasswordView(generics.GenericAPIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-
+                      
 
 
 class SellerProfileView(generics.RetrieveUpdateAPIView):
